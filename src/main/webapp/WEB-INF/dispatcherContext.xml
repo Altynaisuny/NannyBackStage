@@ -8,9 +8,7 @@
 
     <mvc:annotation-driven/>
 
-    <context:component-scan base-package="main.java.controller"/>
-
-    <context:component-scan base-package="main.java.service.Impl"/>
+    <context:component-scan base-package="main.java"/>
 
     <!-- 文件上传配置 -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
