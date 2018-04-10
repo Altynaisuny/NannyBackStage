@@ -1,4 +1,5 @@
-package service;
+package main.java.service;
+
 
 import java.util.HashMap;
 import java.util.List;

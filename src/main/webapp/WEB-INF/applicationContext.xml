@@ -11,12 +11,18 @@
                     http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
     <!-- 扫描包 -->
-    <context:component-scan base-package="main.java.service" />
+    <context:component-scan base-package="main.java"/>
+
+    <mvc:annotation-driven/>
+
+    <mvc:default-servlet-handler/>
+
     <!--加载properties-->
     <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="locations">
             <list>
-                <value>classpath:application.properties</value>
+                <value>WEB-INF/application.properties</value>
+                <value>WEB-INF/log4j.properties</value>
             </list>
         </property>
         <property name="fileEncoding" value="UTF-8"/>
@@ -25,7 +31,7 @@
         <property name="properties" ref="configProperties"/>
     </bean>
     <!-- 配置数据源 -->
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
           destroy-method="close">
         <property name="driverClassName" value="${driverClass}"/>
         <property name="url" value="${jdbcUrl}"/>
@@ -33,16 +39,15 @@
         <property name="password" value="${password}"/>
     </bean>
     <!-- mapper动态代理 -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <!--<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <!-- 自动扫描mapping.xml文件 -->
+        &lt;!&ndash; 自动扫描mapping.xml文件 &ndash;&gt;
         <property name="mapperLocations" value="classpath*:main/java/dao/mapper/*.xml"/>
-    </bean>
+    </bean>-->
 
     <!-- Mybatis配置 -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="main.java.dao" />
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+        <property name="basePackage" value="main.java.dao.mapper" />
     </bean>
 
 </beans>

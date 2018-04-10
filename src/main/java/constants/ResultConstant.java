@@ -1,4 +1,4 @@
-package constants;
+package main.java.constants;
 
 /**
  * 结果集常量

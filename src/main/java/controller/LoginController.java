@@ -1,12 +1,16 @@
-package controller;
+package main.java.controller;
 
-import constants.ResultConstant;
+import com.alibaba.fastjson.JSONObject;
+import main.java.common.CommonMethod;
+import main.java.constants.ResultConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import service.ILoginService;
+import main.java.service.ILoginService;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,18 +24,14 @@ public class LoginController {
 
     /**
      * 登录
-     * @param m
+     * @param jsonParams
      * @return
      */
-    @ResponseBody
     @RequestMapping("/login")
-    public String login(@RequestParam Map m){
-        HashMap paramMap = new HashMap();
-        paramMap.put("userNo", m.get("userNo").toString());
-        paramMap.put("password", m.get("password").toString());
-        System.out.printf("hahah,correct");
+    @ResponseBody
+    public HashMap login(@RequestBody String jsonParams){
         HashMap returnMap = new HashMap();
-
+        HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
         if(!loginValidate(paramMap, returnMap)){
             returnMap.put("result", ResultConstant.ERROR);
             returnMap.put(ResultConstant.MESSAGE, "校验失败");
@@ -43,8 +43,7 @@ public class LoginController {
         }else {
             returnMap.put(ResultConstant.MESSAGE ,"登录失败");
         }
-
-        return "";
+        return returnMap;
     }
 
     /**
@@ -56,6 +55,5 @@ public class LoginController {
     public boolean loginValidate(HashMap paramMap, HashMap returnMap){
         return true;
     }
-
 
 }
