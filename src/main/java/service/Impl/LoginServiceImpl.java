@@ -1,5 +1,6 @@
 package main.java.service.Impl;
 
+import main.java.dao.ILoginDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import main.java.service.ILoginService;
@@ -12,8 +13,10 @@ import java.util.Map;
 public class LoginServiceImpl implements ILoginService {
 
     @Autowired
-    ILoginService loginService;
+    ILoginDao loginDao;
+
+    @Override
     public List<Map> selectLogin(HashMap map) {
-        return loginService.selectLogin(map);
+        return loginDao.selectLogin(map);
     }
 }

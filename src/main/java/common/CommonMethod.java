@@ -14,43 +14,61 @@ import java.util.Random;
  */
 public class CommonMethod {
     /**
-     * 自动生成密码
-     * @return
+     * 生成8位随机字符串
+     * @return 随机字符串
      */
-    public static String autoProducePassword(){
+    public static String autoProduceRandomStr(){
         char[] charAndnum = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-        Random random = new Random(); //用于产生随机数
-        String str = "";
-
-        str = "";
+        Random random = new Random();
+        StringBuilder str = new StringBuilder();
         for (int j = 0; j < 8; j++) {
-            str += charAndnum[random.nextInt(51)];
+            str.append(charAndnum[random.nextInt(51)]);
         }
-        return str;
+        return str.toString();
     }
 
     /**
      * 自动生成记录号
-     * @return
+     * 例如：20180410113644UIAaNPKW
+     * @return String 记录号
      */
     public static String autoProduceRecordNumber(){
         //使用当前系统时间作为记录ID，保证唯一性
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        return sdf.format(date)+ autoProduceRandomStr();
+    }
+
+    /**
+     * 生成客户唯一性标识
+     * @return
+     */
+    public static String autoProduceUniqueNo(){
         long recordTime = System.currentTimeMillis();
-        return Long.toString(recordTime);
+        return "NO"+recordTime;
     }
 
     /**
      *
      * @param jsonStr json字符串
-     * @return
+     * @return map
      */
     public static HashMap jsonParamToMap (String jsonStr){
         JSONObject jsonObject = JSONObject.parseObject(jsonStr);
-        HashMap returnMap = new HashMap();
+        HashMap<String, Object> returnMap = new HashMap<>();
         for (Object map : jsonObject.entrySet()){
-            returnMap.put(((Map.Entry)map).getKey(), ((Map.Entry)map).getValue());
+            returnMap.put(((Map.Entry)map).getKey().toString(), ((Map.Entry)map).getValue());
         }
         return returnMap;
+    }
+
+    /**
+     * @param map
+     * @return
+     */
+    public static String mapToJson(Map map){
+
+        return "";
     }
 
     /**
@@ -66,6 +84,7 @@ public class CommonMethod {
 
     public static void main(String[] args) {
         //1523256878826
+        //bEJWmHXJ
         //这种格式的时间，作为生成记录
         System.out.println(autoProduceRecordNumber());
     }

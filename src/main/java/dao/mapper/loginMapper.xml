@@ -3,9 +3,9 @@
 <mapper namespace="main.java.dao.ILoginDao">
 
     <select id="selectLogin" parameterType="java.util.Map" resultType="java.util.Map">
-        select * from user_info
+        select * from customer_info
         <where>
-            sign = '0' and userNo = #{userNo} AND password = #{password}
+            status = '0' and mobile = #{mobile} AND password = #{password}
         </where>
     </select>
 

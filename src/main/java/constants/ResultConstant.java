@@ -9,6 +9,6 @@ public class ResultConstant {
 
     public static final String ERROR = "0";
 
-    public static final String MESSAGE = "";
+    public static final String MESSAGE = "message";
 
 }
