@@ -11,5 +11,7 @@ public interface ILoginService {
      * @param map
      * @return
      */
-    public List<Map> selectLogin(HashMap map);
+    public List<Map> selectLogin(Map map);
+
+
 }

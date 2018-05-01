@@ -6,9 +6,16 @@ import java.util.Map;
 
 public interface ILoginDao {
     /**
-     * 登录
+     * 登录(客户)
      * @param map
      * @return
      */
-    public List<Map> selectLogin(Map map);
+    public List<Map> selectLoginCustomer(Map map);
+
+    /**
+     * 登录(保姆)
+     * @param map
+     * @return
+     */
+    public List<Map> selectLoginNanny(Map map);
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="main.java.dao.ICustomerDao">
+    <select id="selectCustomerLogin" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT * FROM customer_info
+      <where>
+          <if test="customerNo != null and customerNo != ''">
+              and customerNo = #{customerNo}
+          </if>
+      </where>
+    </select>
+    <select id="selectNannyLogin" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * FROM nanny_info
+        <where>
+            <if test="nannyNo != null and nannyNo != ''">
+                and nannyNo = #{nannyNo}
+            </if>
+        </where>
+    </select>
+</mapper>

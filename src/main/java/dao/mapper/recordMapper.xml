@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="main.java.dao.IRecordDao">
+    <insert id="insertRecord" parameterType="java.util.Map">
+        INSERT  INTO record_info
+        (`recordNo`, `customerNo`, `createTime`,`describe`,`type`, `pay`, `workAddress`, `mobile`,`status`)
+        VALUES
+        (#{recordNo}, #{customerNo}, #{createTime}, #{describe}, #{type},#{pay}, #{workAddress}, #{mobile} ,#{status})
+    </insert>
+
+    <select id="selectPageRecordList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * from record_info r
+        LEFT JOIN customer_info c ON c.customerNo = r.customerNo
+        LEFT JOIN nanny_info n ON r.nannyNo = n.nannyNo
+        <include refid="selectCondition"/>
+        order by r.createTime DESC
+        LIMIT #{offset} ,  #{limit}
+    </select>
+    
+    <select id="selectCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+          select count(1) from record_info
+          <include refid="selectCondition"/>
+    </select>
+
+    <select id="selectRecordDetail" parameterType="java.util.Map" resultType="java.util.Map">
+      select * from record_info
+      <where>
+          1=1 AND recordNo = #{recordNo}
+      </where>
+    </select>
+
+    <insert id="insertRecordApply" parameterType="java.util.Map">
+        insert into apply_info
+        (`recordNo`, `nannyNo`, `occourTime`)VALUES
+        (#{recordNo}, #{nannyNo}, #{occourTime})
+    </insert>
+
+    <select id="selectRecordApply" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT a.*, n.nannyNo, n.nannyName, n.mobile, n.aim, n.`describe`, n.edu from apply_info a
+        LEFT JOIN nanny_info n on a.nannyNo = n.nannyNo
+        LEFT JOIN record_info r on a.recordNo = r.recordNo
+        <where>
+            1=1 AND a.recordNo = #{recordNo} and r.customerNo = #{customerNo}
+        </where>
+        ORDER BY occourTime asc
+    </select>
+
+    <sql id="selectCondition">
+        <where>
+            1=1
+            <if test="customerNo != null and customerNo != '' ">
+                AND customerNo = #{customerNo}
+            </if>
+            <if test="nannyNo != null and nannyNo != ''">
+                AND nannyNo = #{nannyNo}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+    </sql>
+</mapper>

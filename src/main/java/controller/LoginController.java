@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class LoginController {
@@ -31,27 +32,33 @@ public class LoginController {
      * @return
      */
     @RequestMapping("/login")
-    @ResponseBody
     public void login(@RequestBody String jsonParams, HttpServletResponse response) throws IOException {
-        HashMap returnMap = new HashMap<>();
+        HashMap<String, Object> returnMap = new HashMap<>();
         HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
 
         List selectResultList = loginService.selectLogin(paramMap);
-        if (selectResultList.size() == 1){
+        if (null != selectResultList && !selectResultList.isEmpty()){
             returnMap.put("result", ResultConstant.SUCCESS);
             returnMap.put(ResultConstant.MESSAGE, "登录成功");
+
+            HashMap dataMap = (HashMap)selectResultList.get(0);
+            returnMap.put("id", dataMap.get("id"));
+
+            if ((boolean)paramMap.get("sign")){
+                returnMap.put("sign", "保姆");
+                returnMap.put("name", dataMap.get("nannyName"));
+                returnMap.put("nannyNo", dataMap.get("nannyNo"));
+            } else {
+                returnMap.put("sign", "客户");
+                returnMap.put("name", dataMap.get("customerName"));
+                returnMap.put("customerNo", dataMap.get("customerNo"));
+            }
         }else {
-            returnMap.put("result", ResultConstant.ERROR);
+            returnMap.put("result", ResultConstant.FAIL);
             returnMap.put(ResultConstant.MESSAGE, "登录失败");
         }
-        response.getWriter().print(JSON.toJSONString(returnMap));
-        System.out.println(JSON.toJSONString(returnMap));
         response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().print(JSON.toJSONString(returnMap));
     }
-    @RequestMapping("/test")
-    public ModelAndView test(){
-        return new ModelAndView("main");
-    }
-
 
 }

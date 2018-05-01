@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="main.java.dao.ICommentDao">
+
+    <insert id="insertNannyComment" parameterType="java.util.Map">
+        insert into comment (`recordNo`, `nannyNo`, `comment`, `createTime`)
+        VALUES
+        (#{recordNo}, #{nannyNo}, #{comment}, #{createTime})
+    </insert>
+
+    <insert id="insertCustomerComment" parameterType="java.util.Map">
+        insert into comment (`recordNo`, `customerNo`, `comment`, `createTime`)
+        VALUES
+        (#{recordNo}, #{customerNo}, #{comment}, #{createTime})
+    </insert>
+
+    <select id="selectComment" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT m.*,n.nannyName,c.customerName from `comment` m
+        LEFT JOIN nanny_info n on m.nannyNo = n.nannyNo
+        LEFT JOIN customer_info c on c.customerNo = m.customerNo
+        <where>
+            1=1 and recordNo = #{recordNo}
+        </where>
+        order by createTime DESC
+    </select>
+</mapper>
