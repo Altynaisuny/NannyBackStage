@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import main.java.common.CommonMethod;
 import main.java.common.Page;
+import main.java.constants.RecordConstant;
 import main.java.constants.ResultConstant;
 import main.java.service.IRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,9 +195,11 @@ public class RecordController {
         Map returnMap = new HashMap<>();
         HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
 
+        paramMap.put("occurTime", CommonMethod.nowTime());
         if(checkInsertRecordApply(paramMap, returnMap)){
             try {
                 recordService.insertRecordApply(paramMap);
+                returnMap.put("result", ResultConstant.SUCCESS);
             }catch (Exception e){
                 e.printStackTrace();
                 log.error("申请订单失败");
@@ -226,6 +229,192 @@ public class RecordController {
             return false;
         }
 
+        if (null == paramMap.get("status") || "1".equals(paramMap.get("status"))){
+            returnMap.put("result", ResultConstant.FAIL);
+            returnMap.put(ResultConstant.MESSAGE, "该订单已经关闭");
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * 查询订单申请列表
+     * @param jsonParams recordNo
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping("/record/selectNannyApplyList")
+    public void selectRecordApply(@RequestBody String jsonParams, HttpServletResponse response)throws IOException{
+        Map returnMap = new HashMap<>();
+        HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
+
+        List resultList = null;
+        Map recordMap = null;
+        if (validateSelectRecordApply(paramMap, returnMap)){
+            try {
+                resultList = recordService.selectRecordApply(paramMap);
+                recordMap = recordService.selectRecordDetail(paramMap);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        //list 转化为 jsonArray
+        String jsonString = JSONArray.toJSONString(resultList);
+        JSONArray jsonArray = JSONArray.parseArray(jsonString);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("list", jsonArray);
+        //map 转化为 JSONObject
+        jsonObject.put("recordInfo", JSONObject.parse(JSON.toJSONString(recordMap)));
+
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().print(jsonObject);
+    }
+
+    private boolean validateSelectRecordApply(Map paramMap, Map returnMap){
+        if (null == paramMap.get("recordNo") || "".equals(paramMap.get("recordNo"))) {
+            returnMap.put("result", ResultConstant.FAIL);
+            returnMap.put(ResultConstant.MESSAGE, "订单号为空");
+            return false;
+        }
+
+        if(null == paramMap.get("customerNo") || "".equals(paramMap.get("customerNo"))){
+            returnMap.put("result", ResultConstant.FAIL);
+            returnMap.put(ResultConstant.MESSAGE, "客户编号为空");
+            return false;
+        }
+        return true;
+    }
+    /**
+     * 查询客户发布的所有订单
+     * @param jsonParams customerNo status currentPage pageSize
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping("/record/selectCustomerRecordPublish")
+    public void selectRecordPublishByCustomer(@RequestBody String jsonParams, HttpServletResponse response)throws IOException{
+        Map returnMap = new HashMap<>();
+        HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
+        List resultList = null;
+
+        int rows = recordService.countPublishRecord(paramMap);
+        try {
+            resultList =  recordService.selectPagePublishRecord(Page.newPage(paramMap));
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("查询客户发布订单失败！");
+        }
+
+        String jsonString = JSONArray.toJSONString(resultList);
+        JSONArray jsonArray = JSONArray.parseArray(jsonString);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("list", jsonArray);
+        jsonObject.put("rows", rows);
+
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().print(jsonObject);
+    }
+
+    /**
+     * 选定保姆
+     * @param jsonParams recordNo nannyNo
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping("/record/choseNanny")
+    public void choseRecordNanny(@RequestBody String jsonParams, HttpServletResponse response) throws IOException{
+        Map returnMap = new HashMap<>();
+        HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
+
+        paramMap.put("status", "1");//订单状态置为1(已选定)
+        paramMap.put("startTime", CommonMethod.nowTime());
+        //校验能否选定
+        if (validateChoseRecordNanny(paramMap, returnMap)){
+            try {
+                recordService.choseNannyOfRecord(paramMap);
+                returnMap.put("result", ResultConstant.SUCCESS);
+            }catch (Exception e){
+                e.printStackTrace();
+                returnMap.put("result", ResultConstant.FAIL);
+                returnMap.put(ResultConstant.MESSAGE, "选定保姆失败");
+            }
+        }
+
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().print(JSON.toJSONString(returnMap));
+    }
+
+    /**
+     * 校验是否可以选定该保姆
+     */
+    public boolean validateChoseRecordNanny(Map paramMap, Map returnMap){
+        Map recordMap = null ;
+        try {
+            recordMap = recordService.selectRecordDetail(paramMap);
+        } catch (Exception e){
+            e.printStackTrace();
+            returnMap.put("result", ResultConstant.FAIL);
+            returnMap.put(ResultConstant.MESSAGE, "记录不存在！");
+        }
+        if (null ==recordMap.get("nannyNo") || "".equals(recordMap.get("nannyNo").toString())){
+            returnMap.put("result", ResultConstant.FAIL);
+            returnMap.put(ResultConstant.MESSAGE, "保姆已锁定，请先取消");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 取消保姆选定
+     * @param jsonParams
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping("/record/cancelChose")
+    public void cancelNannyChose(@RequestBody String jsonParams, HttpServletResponse response)throws IOException{
+        Map returnMap = new HashMap<>();
+        HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
+        paramMap.put("startTime", null);
+        paramMap.put("status", RecordConstant.CREATE);
+        paramMap.put("nannyNo", null);
+        try {
+            recordService.choseNannyOfRecord(paramMap);
+            returnMap.put("result", ResultConstant.SUCCESS);
+        }catch (Exception e){
+            e.printStackTrace();
+            returnMap.put("result", ResultConstant.FAIL);
+        }
+
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().print(JSON.toJSONString(returnMap));
+    }
+
+    /**
+     * 关闭（结束）订单
+     * @param jsonParams
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping("/record/close")
+    public void closeRecord (@RequestBody String jsonParams, HttpServletResponse response)throws IOException{
+        Map returnMap = new HashMap<>();
+        HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
+
+        String endTime = CommonMethod.nowTime();
+        paramMap.put("endTime", endTime);
+        paramMap.put("status", RecordConstant.END);//状态置为关闭
+
+        try {
+            recordService.updateRecordToClose(paramMap);
+            returnMap.put("result", ResultConstant.SUCCESS);
+        } catch (Exception e){
+            e.printStackTrace();
+            returnMap.put("result", ResultConstant.FAIL);
+            returnMap.put(ResultConstant.MESSAGE, "失败！");
+        }
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().print(JSON.toJSONString(returnMap));
     }
 }

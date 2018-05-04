@@ -53,7 +53,7 @@ public class CommonMethod {
      *
      * @return
      */
-    public static String autoProduceUniqueNo() {
+    public static String autoProduceCustomerNo() {
         long recordTime = System.currentTimeMillis();
         return "NO" + recordTime;
     }

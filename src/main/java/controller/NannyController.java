@@ -87,7 +87,7 @@ public class NannyController {
      * @param paramMap
      * @return
      */
-    public boolean whetherHavePassword (Map paramMap){
+    private boolean whetherHavePassword (Map paramMap){
         Map m = iNannyService.selectNannyByNo(paramMap);
         if (null == m.get("password")){
             return false;

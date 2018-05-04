@@ -32,11 +32,12 @@ public interface IRecordDao {
     public Map selectRecordDetail(Map map);
 
     /**
-     * 选定保姆，更新record的nannyNo 字段
+     * 选定保姆，更新recordInfo的nannyNo ,status ,startTime字段
      * @param map recordNo nannyNo
      * @return
      */
-    public int updateRecordNannyNo(Map map);
+    public int choseNannyOfRecord(Map map);
+
 
     /**
      * 保姆提出申请
@@ -51,10 +52,26 @@ public interface IRecordDao {
      * @return
      */
     public List<Map> selectRecordApply(Map map);
+
     /**
-     * 更新本次记录的评分
+     * 查询该客户发布的所有订单
      * @param map
      * @return
      */
-    public int updateRecordScore(Map map);
+    public List<Map> selectPagePublishRecord(Map map);
+
+    /**
+     * 该客户一共发布了多少订单
+     * @param map
+     * @return
+     */
+    public int countPublishRecord(Map map);
+
+    public int cancelNannyOfRecord(Map map);
+
+    /**
+     * 关闭订单
+     * @return
+     */
+    public int updateRecordToClose(Map map);
 }

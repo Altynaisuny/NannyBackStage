@@ -12,8 +12,11 @@ public class Page {
 
     private static Log log = LogFactory.getLog(Page.class);
 
+
     /**
-     * page参数
+     *
+     * @param paramMap currentPage当前页码  pageSize每页行数
+     * @return
      */
     public static Map<String, Object> newPage(Map<String, Object> paramMap) {
         int page = 0;

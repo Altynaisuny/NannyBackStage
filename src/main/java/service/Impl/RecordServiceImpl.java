@@ -50,8 +50,8 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public int updateRecordNannyNo(Map map) {
-        return 0;
+    public int choseNannyOfRecord(Map map) {
+        return iRecordDao.choseNannyOfRecord(map);
     }
 
     @Override
@@ -82,6 +82,26 @@ public class RecordServiceImpl implements IRecordService {
     @Override
     public List<Map> selectRecordComment(Map map) {
         return iCommentDao.selectComment(map);
+    }
+
+    @Override
+    public List<Map> selectPagePublishRecord(Map map) {
+        return iRecordDao.selectPagePublishRecord(map);
+    }
+
+    @Override
+    public int countPublishRecord(Map map) {
+        return iRecordDao.countPublishRecord(map);
+    }
+
+    @Override
+    public List<Map> selectRecordApply(Map map) {
+        return iRecordDao.selectRecordApply(map);
+    }
+
+    @Override
+    public int updateRecordToClose(Map map) {
+        return iRecordDao.updateRecordToClose(map);
     }
 
 }

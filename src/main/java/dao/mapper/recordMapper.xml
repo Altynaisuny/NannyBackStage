@@ -31,18 +31,45 @@
 
     <insert id="insertRecordApply" parameterType="java.util.Map">
         insert into apply_info
-        (`recordNo`, `nannyNo`, `occourTime`)VALUES
-        (#{recordNo}, #{nannyNo}, #{occourTime})
+        (`recordNo`, `nannyNo`, `occurTime`)VALUES
+        (#{recordNo}, #{nannyNo}, #{occurTime})
     </insert>
 
     <select id="selectRecordApply" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT a.*, n.nannyNo, n.nannyName, n.mobile, n.aim, n.`describe`, n.edu from apply_info a
+        SELECT a.*, n.nannyName, n.mobile, n.`describe`, r.`status`from apply_info a
         LEFT JOIN nanny_info n on a.nannyNo = n.nannyNo
         LEFT JOIN record_info r on a.recordNo = r.recordNo
         <where>
             1=1 AND a.recordNo = #{recordNo} and r.customerNo = #{customerNo}
         </where>
-        ORDER BY occourTime asc
+        ORDER BY occurTime asc
+    </select>
+
+    <select id="selectPagePublishRecord" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT r.*,n.nannyName,n.sex,n.mobile as nannyMobile from record_info r
+        LEFT JOIN nanny_info n on r.nannyNo = n.nannyNo
+        <where>
+            1=1 AND r.customerNo = #{customerNo}
+            <if test="status != null and status != '' ">
+                AND r.status = #{status}
+            </if>
+        </where>
+        ORDER BY r.createTime DESC
+        LIMIT #{offset} ,  #{limit}
+    </select>
+
+    <select id="countPublishRecord" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(1) from record_info r
+        <where>
+            1=1 AND r.customerNo = #{customerNo}
+            <if test="status != null and status != '' ">
+                AND r.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCountRecordApply" parameterType="java.util.Map" resultType="java.util.Map">
+
     </select>
 
     <sql id="selectCondition">
@@ -59,4 +86,36 @@
             </if>
         </where>
     </sql>
+
+    <update id="choseNannyOfRecord" parameterType="java.util.Map">
+        update record_info
+        <set>
+            nannyNo = #{nannyNo},
+            startTime = #{startTime},
+            status = #{status}
+        </set>
+        where recordNo = #{recordNo}
+    </update>
+
+    <update id="cancelNannyOfRecord" parameterType="java.util.Map">
+        update record_info SET
+        nannyNo = #{nannyNo},startTime = #{startTime}, status = #{status}
+        WHERE  recordNo = #{recordNo} AND customerNo = #{customerNo}
+    </update>
+
+    <update id="updateRecordToClose" parameterType="java.util.Map">
+        UPDATE record_info
+        <set>
+            endTime = #{endTime},
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="evaluate != null">
+                evaluate = #{evaluate},
+            </if>
+            status = #{status}
+        </set>
+        WHERE  recordNo = #{recordNo}
+    </update>
+
 </mapper>

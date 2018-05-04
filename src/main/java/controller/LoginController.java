@@ -37,6 +37,7 @@ public class LoginController {
         HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
 
         List selectResultList = loginService.selectLogin(paramMap);
+
         if (null != selectResultList && !selectResultList.isEmpty()){
             returnMap.put("result", ResultConstant.SUCCESS);
             returnMap.put(ResultConstant.MESSAGE, "登录成功");
@@ -44,7 +45,7 @@ public class LoginController {
             HashMap dataMap = (HashMap)selectResultList.get(0);
             returnMap.put("id", dataMap.get("id"));
 
-            if ((boolean)paramMap.get("sign")){
+            if (paramMap.get("sign").toString().equals("保姆")){
                 returnMap.put("sign", "保姆");
                 returnMap.put("name", dataMap.get("nannyName"));
                 returnMap.put("nannyNo", dataMap.get("nannyNo"));

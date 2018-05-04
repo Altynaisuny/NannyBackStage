@@ -17,4 +17,11 @@
             </if>
         </where>
     </select>
+
+    <insert id="insertCustomer" parameterType="java.util.Map">
+        INSERT into customer_info
+        (customerNo, customerName, password, pinCard, createTime, email, mobile, address, status, lastLoginTime, lockTime)
+        VALUES
+        (#{customerNo}, #{customerName}, #{password}, #{pinCard}, #{createTime}, #{email}, #{mobile}, #{address}, #{status}, #{lastLoginTime}, #{lockTime})
+    </insert>
 </mapper>

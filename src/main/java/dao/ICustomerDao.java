@@ -18,4 +18,11 @@ public interface ICustomerDao {
      */
     public Map selectCustomerLogin(Map map);
 
+    /**
+     * 插入新的客户
+     * @param map
+     * @return
+     */
+    public int insertCustomer(Map map);
+
 }

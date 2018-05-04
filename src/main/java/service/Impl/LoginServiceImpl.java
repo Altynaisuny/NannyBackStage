@@ -21,12 +21,26 @@ public class LoginServiceImpl implements ILoginService {
 
     @Override
     public List<Map> selectLogin(Map map){
+
+        if (null == map.get("user") ){
+            return null;
+        }
         try {
-            if ((boolean)map.get("sign")){
+            if (map.get("sign").toString().equals("保姆")){
                 //保姆
+                if (map.get("user").toString().startsWith("NA")){
+                    map.put("nannyNo", map.get("user"));//使用编号登录
+                } else {
+                    map.put("mobile", map.get("user"));//使用手机登录
+                }
                 return loginDao.selectLoginNanny(map);
             } else {
                 //客户
+                if (map.get("user").toString().startsWith("NO")){
+                    map.put("customerNo", map.get("user"));
+                } else {
+                    map.put("mobile", map.get("user"));
+                }
                 return loginDao.selectLoginCustomer(map);
             }
         }catch (Exception e){
