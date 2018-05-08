@@ -26,7 +26,7 @@ public class LoginServiceImpl implements ILoginService {
             return null;
         }
         try {
-            if (map.get("sign").toString().equals("保姆")){
+            if ("保姆".equals(map.get("sign").toString())){
                 //保姆
                 if (map.get("user").toString().startsWith("NA")){
                     map.put("nannyNo", map.get("user"));//使用编号登录

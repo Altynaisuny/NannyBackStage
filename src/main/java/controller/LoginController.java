@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import main.java.common.CommonMethod;
 import main.java.constants.ResultConstant;
+import main.java.util.Md5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestHandler;
@@ -36,6 +37,7 @@ public class LoginController {
         HashMap<String, Object> returnMap = new HashMap<>();
         HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
 
+        paramMap.put("password", Md5Utils.stringMD5(paramMap.get("password").toString()));
         List selectResultList = loginService.selectLogin(paramMap);
 
         if (null != selectResultList && !selectResultList.isEmpty()){
@@ -45,7 +47,7 @@ public class LoginController {
             HashMap dataMap = (HashMap)selectResultList.get(0);
             returnMap.put("id", dataMap.get("id"));
 
-            if (paramMap.get("sign").toString().equals("保姆")){
+            if ("保姆".equals(paramMap.get("sign").toString())){
                 returnMap.put("sign", "保姆");
                 returnMap.put("name", dataMap.get("nannyName"));
                 returnMap.put("nannyNo", dataMap.get("nannyNo"));

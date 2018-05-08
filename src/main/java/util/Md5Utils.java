@@ -51,7 +51,7 @@ public class Md5Utils {
     }
 
     /**
-     * 字符串的md5加密
+     * 字符串的md5加密 32位
      * @param input
      * @return
      */
@@ -110,20 +110,9 @@ public class Md5Utils {
         //测试字符串MD5加密
         //123456: e10adc3949ba59abbe56e057f20f883e
         //eastcom:  6997c46956185a7c4d452646fc9c69e2
-        System.out.println(stringMD5("123456"));
+        String test = stringMD5("123");
+        System.out.println(test);
+        System.out.println(test.length());
 
-        try {
-            long startTime = System.currentTimeMillis();
-            //测试文件MD5加密
-            String FilePath = "C:/Users/shenda20467/Desktop/jar包/hibernate-annotations jar包.zip";
-            System.out.println(fileMD5(FilePath));
-
-            long endTime = System.currentTimeMillis();
-            System.out.println((endTime - startTime)/1000);
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
     }
 }

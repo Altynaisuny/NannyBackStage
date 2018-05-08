@@ -3,9 +3,13 @@ package main.java.controller;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import main.java.common.CommonMethod;
+import main.java.common.Page;
 import main.java.constants.ResultConstant;
 import main.java.service.INannyService;
+import main.java.util.Md5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -69,6 +74,7 @@ public class NannyController {
             returnMap.put("result", ResultConstant.FAIL);
             returnMap.put(ResultConstant.MESSAGE, "该用户已存在密码！");
         } else {
+            paramMap.put("password", Md5Utils.stringMD5(paramMap.get("password").toString()));
             try {
                 iNannyService.updateNannyPassword(paramMap);
                 returnMap.put("result", ResultConstant.SUCCESS);
@@ -93,6 +99,43 @@ public class NannyController {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 查看该保姆的 从业记录 和个人信息
+     * @param jsonParams
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping("/nanny/info")
+    public void selectNannyInfo(@RequestBody String jsonParams, HttpServletResponse response)throws IOException{
+        Map returnMap = new HashMap<>();
+        Map paramMap = CommonMethod.jsonParamToMap(jsonParams);
+        //客户信息map
+        Map nannyInfoMap = null;
+        //从业资格list
+        List resultList = null;
+        //总数
+        int rows = 0;
+        if (null != paramMap.get("nannyNo") && !"".equals(paramMap.get("nannyNo").toString())){
+            try {
+                nannyInfoMap = iNannyService.selectDetail(paramMap);
+                rows = iNannyService.selectCountRecordHistory(paramMap);
+                resultList = iNannyService.selectRecordHistory(Page.newPage(paramMap));
+            } catch (Exception e){
+                returnMap.put("result", ResultConstant.FAIL);
+                e.printStackTrace();
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("info", JSONObject.parse(JSON.toJSONString(nannyInfoMap)));
+        jsonObject.put("result", JSONObject.parse(JSON.toJSONString(returnMap)));
+        jsonObject.put("list", JSONArray.parseArray(JSONArray.toJSONString(resultList)));
+        jsonObject.put("rows", rows);
+
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().print(jsonObject);
     }
 
     /**

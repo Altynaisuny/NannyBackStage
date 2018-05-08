@@ -194,7 +194,6 @@ public class RecordController {
     public void insertRecordApply(@RequestBody String jsonParams, HttpServletResponse response)throws IOException{
         Map returnMap = new HashMap<>();
         HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
-
         paramMap.put("occurTime", CommonMethod.nowTime());
         if(checkInsertRecordApply(paramMap, returnMap)){
             try {
@@ -235,6 +234,8 @@ public class RecordController {
             return false;
         }
 
+        //todo 这里还要加一层，查询该保姆有没有还未结束的订单
+
         return true;
     }
 
@@ -257,6 +258,7 @@ public class RecordController {
                 recordMap = recordService.selectRecordDetail(paramMap);
             } catch (Exception e){
                 e.printStackTrace();
+                returnMap.put("result", ResultConstant.FAIL);
             }
         }
         //list 转化为 jsonArray
@@ -264,10 +266,10 @@ public class RecordController {
         JSONArray jsonArray = JSONArray.parseArray(jsonString);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("list", jsonArray);
-        //map 转化为 JSONObject
-        jsonObject.put("recordInfo", JSONObject.parse(JSON.toJSONString(recordMap)));
 
+        jsonObject.put("list", jsonArray);
+        jsonObject.put("recordInfo", JSONObject.parse(JSON.toJSONString(recordMap)));
+        jsonObject.put("result", JSONObject.parse(JSON.toJSONString(returnMap)));
         response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().print(jsonObject);
     }
@@ -401,20 +403,43 @@ public class RecordController {
     public void closeRecord (@RequestBody String jsonParams, HttpServletResponse response)throws IOException{
         Map returnMap = new HashMap<>();
         HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
+        paramMap.put("endTime", CommonMethod.nowTime());
 
-        String endTime = CommonMethod.nowTime();
-        paramMap.put("endTime", endTime);
-        paramMap.put("status", RecordConstant.END);//状态置为关闭
-
-        try {
-            recordService.updateRecordToClose(paramMap);
-            returnMap.put("result", ResultConstant.SUCCESS);
-        } catch (Exception e){
-            e.printStackTrace();
-            returnMap.put("result", ResultConstant.FAIL);
-            returnMap.put(ResultConstant.MESSAGE, "失败！");
+        //校验是否可以关闭
+        if (checkCloseRecord(paramMap, returnMap)){
+            try {
+                recordService.updateRecordToClose(paramMap);
+                returnMap.put("result", ResultConstant.SUCCESS);
+            } catch (Exception e){
+                e.printStackTrace();
+                returnMap.put("result", ResultConstant.FAIL);
+                returnMap.put(ResultConstant.MESSAGE, "失败！");
+            }
         }
         response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().print(JSON.toJSONString(returnMap));
+    }
+
+    public boolean checkCloseRecord (Map paramMap, Map returnMap){
+        //订单不存在，返回错误
+        if (null == paramMap.get("recordNo")){
+            returnMap.put("result", ResultConstant.FAIL);
+            returnMap.put(ResultConstant.MESSAGE, "订单不存在！");
+            return false;
+        }
+        try {
+            Map resultMap = recordService.selectRecordDetail(paramMap);
+            //只有状态为被预约状态，才能关闭。
+            if (RecordConstant.RESERVE.equals(resultMap.get("status").toString())){
+                paramMap.put("status", RecordConstant.END);//状态置为关闭
+                return  true;
+            } else {
+                returnMap.put("result", ResultConstant.FAIL);
+                returnMap.put(ResultConstant.MESSAGE, "订单状态错误！");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }

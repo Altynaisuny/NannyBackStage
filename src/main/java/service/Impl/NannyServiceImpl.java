@@ -12,24 +12,39 @@ import java.util.Map;
 public class NannyServiceImpl implements INannyService {
 
     @Autowired
-    INannyDao iNannyDao;
+    INannyDao nannyDao;
     @Override
     public int insertNanny(Map map) {
-        return iNannyDao.insertNanny(map);
+        return nannyDao.insertNanny(map);
     }
 
     @Override
     public int updateNannyPassword(Map map) {
-        return iNannyDao.updateNannyPassword(map);
+        return nannyDao.updateNannyPassword(map);
     }
 
     @Override
     public Map selectNannyByNo(Map map) {
-        List<Map> list = iNannyDao.selectNannyByNo(map);
+        List<Map> list = nannyDao.selectNannyByNo(map);
         if (list.size() == 0){
             return null;
         }else {
             return list.get(0);
         }
+    }
+
+    @Override
+    public Map selectDetail(Map map) {
+        return nannyDao.selectDetail(map);
+    }
+
+    @Override
+    public List<Map> selectRecordHistory(Map map) {
+        return nannyDao.selectRecordHistory(map);
+    }
+
+    @Override
+    public int selectCountRecordHistory(Map map) {
+        return nannyDao.selectCountRecordHistory(map);
     }
 }

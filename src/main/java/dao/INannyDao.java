@@ -40,5 +40,31 @@ public interface INannyDao {
      */
     public int updateNannyNo(Map map);
 
+    /**
+     * 查询该保姆所有订单
+     * @param map
+     * @return
+     */
+    public List<Map> selectRecordHistory(Map map);
+
+    /**
+     * 总数
+     * @param map
+     * @return
+     */
+    public int selectCountRecordHistory(Map map);
+
+    /**
+     * 查询保姆信息详情
+     * @param map
+     * @return
+     */
+    public Map selectDetail(Map map);
+
+    /**
+     * 查询保姆有没有未结束的订单
+     * @return
+     */
+    public List<Map> isNannyHasUnclosedRecord();
 
 }

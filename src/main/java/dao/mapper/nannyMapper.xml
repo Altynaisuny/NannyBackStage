@@ -10,10 +10,10 @@
     </insert>
 
     <update id="updateNannyPassword" parameterType="java.util.Map">
-      update nanny_info
-      <set>
-          password = #{password}
-      </set>
+        update nanny_info
+        <set>
+            password = #{password}
+        </set>
         <where>
             1=1
             <if test="id !=null and id !='' ">
@@ -24,7 +24,7 @@
             </if>
         </where>
     </update>
-    
+
     <select id="selectNannyByNo" parameterType="java.util.Map" resultType="java.util.Map">
         select * from nanny_info
         <where>
@@ -55,5 +55,43 @@
             </if>
         </where>
     </sql>
+
+    <select id="selectRecordHistory" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT r.* from record_info r
+        LEFT JOIN nanny_info n on r.nannyNo = n.nannyNo
+        <where>
+            r.`status` = '2'  AND n.nannyNo = #{nannyNo}
+        </where>
+        ORDER BY r.createTime DESC
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountRecordHistory" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(1) from record_info r
+        LEFT JOIN nanny_info n on r.nannyNo = n.nannyNo
+        <where>
+            r.`status` = '2'  AND n.nannyNo = #{nannyNo}
+        </where>
+    </select>
+
+    <select id="selectDetail" parameterType="java.util.Map" resultType="java.util.Map">
+        select n.nannyNo,n.nannyName,n.sex,n.birthday,n.mobile,n.tag,n.edu,n.`require`,n.`describe`,n.aim
+        from nanny_info n
+        <where>
+            1=1 AND nannyNo = #{nannyNo}
+            <if test="mobile != null and mobile != '' ">
+                AND mobile = #{mobile}
+            </if>
+            <if test="status != null and status != '' ">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+    
+    <select id="isNannyHasUnclosedRecord" parameterType="java.util.Map" resultType="java.util.Map">
+        select * from nanny_info n
+        LEFT JOIN record_info r  on r.nannyNo = n.nannyNo
+        WHERE n.nannyNo = #{nannyNo} AND r.`status` = '1'
+    </select>
 
 </mapper>
