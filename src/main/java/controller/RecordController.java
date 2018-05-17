@@ -98,7 +98,7 @@ public class RecordController {
             e.printStackTrace();
             log.error("查询未结束订单失败");
         }
-        response.setContentType("text/plain;charset=UTF-8");
+
         String jsonString = JSONArray.toJSONString(resultList);
         JSONArray jsonArray = JSONArray.parseArray(jsonString);
 
@@ -106,6 +106,7 @@ public class RecordController {
         jsonObject.put("list", jsonArray);
         jsonObject.put("rows", rows);
 
+        response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().print(jsonObject);
     }
 
@@ -235,6 +236,7 @@ public class RecordController {
         }
 
         //todo 这里还要加一层，查询该保姆有没有还未结束的订单
+        //todo 还有一层，防止重复提交。已经存在就不允许重复提交。。
 
         return true;
     }
@@ -430,7 +432,7 @@ public class RecordController {
         try {
             Map resultMap = recordService.selectRecordDetail(paramMap);
             //只有状态为被预约状态，才能关闭。
-            if (RecordConstant.RESERVE.equals(resultMap.get("status").toString())){
+            if (RecordConstant.RESERVE.equals(resultMap.get("status").toString()) || RecordConstant.END.equals(resultMap.get("status").toString())){
                 paramMap.put("status", RecordConstant.END);//状态置为关闭
                 return  true;
             } else {

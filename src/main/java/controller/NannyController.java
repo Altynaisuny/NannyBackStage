@@ -44,6 +44,7 @@ public class NannyController {
 
         String nannyNo = CommonMethod.autoProduceNannyNo();
         paramMap.put("nannyNo", nannyNo);//自动生成保姆编号
+        paramMap.put("status", '0');
         try{
             iNannyService.insertNanny(paramMap);
             returnMap.put("result", ResultConstant.SUCCESS);

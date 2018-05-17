@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import main.java.common.CommonMethod;
 import main.java.constants.ResultConstant;
 import main.java.service.ICustomerService;
+import main.java.util.Md5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ public class CustomerController {
 
         String customerNo = CommonMethod.autoProduceCustomerNo();
         paramMap.put("customerNo", customerNo);//自动生成客户唯一标识号
+        paramMap.put("password", Md5Utils.stringMD5(paramMap.get("password").toString()));
         paramMap.put("createTime", CommonMethod.nowTime());
         paramMap.put("status", "0");
 

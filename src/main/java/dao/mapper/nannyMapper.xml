@@ -4,9 +4,9 @@
 
     <insert id="insertNanny" parameterType="java.util.Map">
         insert into nanny_info
-        (`nannyNo`,`nannyName`, `sex`, `birthday`, `mobile`, `tag`, `aim`, `describe`,`pinCard`, `address`, `edu`, `require`)
+        (`nannyNo`,`nannyName`, `sex`, `birthday`, `mobile`, `tag`, `aim`, `describe`,`pinCard`, `address`, `edu`, `require`, `status`)
         VALUES
-        (#{nannyNo}, #{nannyName}, #{sex}, #{birthday}, #{mobile}, #{tag}, #{aim}, #{describe}, #{pinCard}, #{address}, #{edu}, #{require})
+        (#{nannyNo}, #{nannyName}, #{sex}, #{birthday}, #{mobile}, #{tag}, #{aim}, #{describe}, #{pinCard}, #{address}, #{edu}, #{require}, #{status})
     </insert>
 
     <update id="updateNannyPassword" parameterType="java.util.Map">
