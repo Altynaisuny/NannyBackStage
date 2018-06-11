@@ -19,9 +19,13 @@ public class Page {
      * @return
      */
     public static Map<String, Object> newPage(Map<String, Object> paramMap) {
+        //没有分页信息，全部传回
+        if (!paramMap.containsKey("currentPage") || !paramMap.containsKey("pageSize")){
+            return paramMap;
+        }
+
         int page = 0;
         int rows = 0;
-        //参数校验
         if (null == paramMap.get("currentPage")){
             page = 1;
         }

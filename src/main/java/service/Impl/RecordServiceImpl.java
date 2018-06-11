@@ -1,5 +1,6 @@
 package main.java.service.Impl;
 
+import main.java.constants.RecordConstant;
 import main.java.dao.ICommentDao;
 import main.java.dao.IRecordDao;
 import main.java.service.IRecordService;
@@ -30,13 +31,24 @@ public class RecordServiceImpl implements IRecordService {
 
     @Override
     public List<Map> selectRecordListUnclosed(Map map) {
-        map.put("status", 0);//添加未结束条件
-        int currentPage = Integer.parseInt(map.get("currentPage").toString());
-        int pageSize = Integer.parseInt(map.get("pageSize").toString());
+        //todo 这里有点问题，向外界展示的订单，状态
+        int currentPage = 1;
+        int pageSize = 10;
+        if (map.containsKey("currentPage") && map.containsKey("pageSize")){
+            try{
+                currentPage = Integer.parseInt(map.get("currentPage").toString());
+                pageSize = Integer.parseInt(map.get("pageSize").toString());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            map.put("offset", (currentPage-1)*pageSize);
+            map.put("limit", map.get("pageSize").toString());
 
-        map.put("offset", (currentPage-1)*pageSize);
-        map.put("limit", map.get("pageSize").toString());
-        return iRecordDao.selectPageRecordList(map);
+            return iRecordDao.selectPageRecordList(map);
+        } else {
+            return null;
+        }
+
     }
 
     @Override

@@ -10,8 +10,6 @@
 
     <select id="selectPageRecordList" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT * from record_info r
-        LEFT JOIN customer_info c ON c.customerNo = r.customerNo
-        LEFT JOIN nanny_info n ON r.nannyNo = n.nannyNo
         <include refid="selectCondition"/>
         order by r.createTime DESC
         LIMIT #{offset} ,  #{limit}
@@ -83,6 +81,18 @@
             </if>
             <if test="status != null and status != ''">
                 AND status = #{status}
+            </if>
+            <if test="type != null and type != '' ">
+                and `type` = #{type}
+            </if>
+            <if test="pay != null and pay != '' ">
+                and pay = #{pay}
+            </if>
+            <if test="workAddress != null and workAddress != '' ">
+                and workAddress = #{workAddress}
+            </if>
+            <if test="describe != null and describe != '' ">
+                and `describe` like CONCAT(CONCAT('%',#{describe},'%'))
             </if>
         </where>
     </sql>

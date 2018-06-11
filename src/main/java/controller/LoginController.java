@@ -58,7 +58,7 @@ public class LoginController {
             }
         }else {
             returnMap.put("result", ResultConstant.FAIL);
-            returnMap.put(ResultConstant.MESSAGE, "登录失败");
+            returnMap.put(ResultConstant.MESSAGE, "登录失败,用户名或密码错误！");
         }
         response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().print(JSON.toJSONString(returnMap));

@@ -88,6 +88,8 @@ public class RecordController {
     public void selectRecordList(@RequestBody String jsonParams,HttpServletResponse response)throws IOException{
         HashMap<String, Object> returnMap = new HashMap<>();
         HashMap paramMap = CommonMethod.jsonParamToMap(jsonParams);
+
+        paramMap.put("status", RecordConstant.CREATE);
         //数据总数
         int rows = recordService.selectCount(paramMap);
         List resultList = null;

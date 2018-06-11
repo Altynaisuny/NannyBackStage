@@ -57,10 +57,13 @@
     </sql>
 
     <select id="selectRecordHistory" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT r.* from record_info r
+        SELECT r.*,n.nannyName from record_info r
         LEFT JOIN nanny_info n on r.nannyNo = n.nannyNo
         <where>
             r.`status` = '2'  AND n.nannyNo = #{nannyNo}
+            <if test="nannyName != null and nannyName != '' ">
+                nannyName = #{nannyName}
+            </if>
         </where>
         ORDER BY r.createTime DESC
         limit #{offset}, #{limit}
@@ -71,6 +74,9 @@
         LEFT JOIN nanny_info n on r.nannyNo = n.nannyNo
         <where>
             r.`status` = '2'  AND n.nannyNo = #{nannyNo}
+            <if test="nannyName != null and nannyName != '' ">
+                nannyName = #{nannyName}
+            </if>
         </where>
     </select>
 
@@ -81,6 +87,9 @@
             1=1 AND nannyNo = #{nannyNo}
             <if test="mobile != null and mobile != '' ">
                 AND mobile = #{mobile}
+            </if>
+            <if test="nannyName != null and nannyName != '' ">
+                and nannyName = #{nannyName}
             </if>
             <if test="status != null and status != '' ">
                 AND status = #{status}
